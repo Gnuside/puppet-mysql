@@ -66,7 +66,7 @@ define mysql::create_database ( $username, $password, $root_password ) {
 
    exec { "create-${name}-db":
         unless => "/usr/bin/mysql -uroot -p${root_password} ${name}",
-        command => "/usr/bin/mysql -uroot -p${root_password} -e \"${create_sql};\"",
+        command => "/usr/bin/mysql -uroot -p${root_password} -e \"${create_sql}\"",
 	require => Class['mysql::service']
       }
 
