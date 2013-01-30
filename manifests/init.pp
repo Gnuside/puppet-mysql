@@ -50,7 +50,7 @@ define mysql::password (
 ) {
   include mysql
   
-  exec { "set-mysql-password":
+  exec { "mysql::password::set-mysql-password ${password}":
     unless => "mysqladmin -u${username} -p'${password}' status",
     path => ["/bin", "/usr/bin"],
     command => "mysqladmin -u${username} password '${password}'",
