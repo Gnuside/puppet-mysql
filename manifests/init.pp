@@ -65,16 +65,16 @@ define mysql::database_create ( $username, $password, $root_password ) {
   $grant_sql = "grant all on ${name}.* to ${username}@localhost identified by '$password';"
 
 
-   exec { "mysql::create_database::create-db ${name}":
+   exec { "mysql::database_create::create-db ${name}":
      unless => "/usr/bin/mysql -uroot -p${root_password} ${name}",
      command => "/usr/bin/mysql -uroot -p${root_password} -e \"${create_sql}\"",
      require => Class['mysql::service']
    }
 
-   exec { "mysql::create_database::grant-db ${name}":
+   exec { "mysql::database_create::grant-db ${name}":
      unless => "/usr/bin/mysql -u${username} -p${password} ${name}",
      command => "/usr/bin/mysql -uroot -p${root_password} -e \"${grant_sql}\"",
-     require => [Class["mysql::service"], Exec["mysql::create_database::create-db ${name}"]]
+     require => [Class["mysql::service"], Exec["mysql::database_create::create-db ${name}"]]
    }
 }
 
@@ -85,7 +85,7 @@ define mysql::database_seed ( $username, $password, $root_password, $seed_file, 
   $database = $name
 
   exec { "mysql::database_seed ${database}":
-    require => Mysql::Create_database["${database}"],
+    require => Mysql::Database_create["${database}"],
     unless => "test -f ${seed_file} && \
       mysql --batch -u${username} -p${password} \
       -e 'SHOW TABLES' ${database} | grep -q '^${final_table}$'",
